@@ -9,6 +9,12 @@ import ru.job4j.sqch9ex1.LoginProcessor;
 
 @Controller
 public class LoginController {
+    private final LoginProcessor loginProcessor;
+
+    public LoginController(LoginProcessor loginProcessor) {
+        this.loginProcessor = loginProcessor;
+    }
+
     @GetMapping("/")
     public String loginGet() {
         return "login.html";
@@ -20,15 +26,14 @@ public class LoginController {
             @RequestParam String password,
             Model model
     ) {
-        LoginProcessor lp = new LoginProcessor();
-        lp.setUsername(username);
-        lp.setPassword(password);
+        loginProcessor.setUsername(username);
+        loginProcessor.setPassword(password);
+        boolean loggedIn = loginProcessor.login();
 
-        if(lp.login()) {
-            model.addAttribute("message", "You are now logged in!");
-        } else {
-            model.addAttribute("message", "Login failed!");
+        if(loggedIn) {
+            return "redirect:/main";
         }
+        model.addAttribute("message", "Login failed!");
         return "login.html";
     }
 }
